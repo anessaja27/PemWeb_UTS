@@ -155,8 +155,8 @@ document.addEventListener('DOMContentLoaded', () => {
   subjectInput.addEventListener('blur', validateSubject);
   messageInput.addEventListener('blur', validateMessage);
 
-  // Penanganan Submit Formulir
-  form.addEventListener('submit', (e) => {
+  // Penanganan Submit Formulir - Mengirim pesan nyata ke email akademik via AJAX
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const isNameValid = validateName();
@@ -165,18 +165,69 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMessageValid = validateMessage();
 
     if (isNameValid && isEmailValid && isSubjectValid && isMessageValid) {
-      const senderName = nameInput.value.trim();
+      const nameVal = nameInput.value.trim();
+      const emailVal = emailInput.value.trim();
+      const subjectVal = subjectInput.value.trim();
+      const messageVal = messageInput.value.trim();
+      const submitBtn = document.getElementById('submit-btn');
+      const originalBtnText = submitBtn.querySelector('.btn-text').textContent;
 
-      // Tampilkan notifikasi toast interaktif (DOM Manipulation)
-      showToastNotification(
-        'Pesan Berhasil Terkirim!',
-        `Terima kasih, ${senderName}! Pesan Anda untuk Andrasena Nugraha telah berhasil diproses.`
-      );
+      // Status loading tombol submit
+      submitBtn.disabled = true;
+      submitBtn.querySelector('.btn-text').textContent = 'Mengirim ke Email...';
 
-      // Reset form dan feedback
-      form.reset();
-      clearValidationFeedback();
-      if (charCounter) charCounter.textContent = '0 / 500';
+      try {
+        const response = await fetch('https://formsubmit.co/ajax/25091397129@mhs.unesa.ac.id', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            name: nameVal,
+            email: emailVal,
+            _subject: `[Portofolio UNESA] ${subjectVal} - dari ${nameVal}`,
+            message: messageVal,
+            _captcha: 'false',
+            _template: 'table'
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && (result.success === 'true' || result.success === true)) {
+          showToastNotification(
+            'Pesan Berhasil Terkirim!',
+            `Terima kasih, ${nameVal}! Pesan Anda telah berhasil dikirimkan ke email akademik (25091397129@mhs.unesa.ac.id).`
+          );
+          form.reset();
+          clearValidationFeedback();
+          if (charCounter) charCounter.textContent = '0 / 500';
+        } else if (result.message && result.message.toLowerCase().includes('activation')) {
+          // Kasus aktivasi pertama kali pada email akademik
+          showToastNotification(
+            'Konfirmasi Aktivasi Email Dikirim!',
+            `Link aktivasi pertama telah dikirim ke 25091397129@mhs.unesa.ac.id. Cukup klik 'Activate Form' sekali di email tersebut agar form siap menerima pesan seterusnya!`
+          );
+          form.reset();
+          clearValidationFeedback();
+          if (charCounter) charCounter.textContent = '0 / 500';
+        } else {
+          throw new Error(result.message || 'Gagal mengirim pesan.');
+        }
+      } catch (err) {
+        console.warn('Pengiriman via FormSubmit dialihkan ke mailto:', err.message);
+        showToastNotification(
+          'Membuka Aplikasi Email...',
+          `Membuka aplikasi email default untuk mengirim pesan langsung ke 25091397129@mhs.unesa.ac.id.`
+        );
+        // Fallback langsung membuka mailto
+        const mailtoBody = encodeURIComponent(`Halo Andrasena,\n\nNama: ${nameVal}\nEmail: ${emailVal}\nSubjek: ${subjectVal}\n\nPesan:\n${messageVal}`);
+        window.location.href = `mailto:25091397129@mhs.unesa.ac.id?subject=${encodeURIComponent(subjectVal)}&body=${mailtoBody}`;
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.querySelector('.btn-text').textContent = originalBtnText;
+      }
     } else {
       // Fokus ke elemen pertama yang tidak valid
       const firstInvalid = form.querySelector('.is-invalid');
