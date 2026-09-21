@@ -139,7 +139,10 @@ async function fetchGitHubStats() {
     if (reposEl) reposEl.textContent = userData.public_repos ?? 6;
     if (followersEl) followersEl.textContent = userData.followers ?? 2;
     if (followingEl) followingEl.textContent = userData.following ?? 1;
-    if (avatarImg && userData.avatar_url) avatarImg.src = userData.avatar_url;
+    // Menjaga foto profil lokal pengguna tetap aktif, hanya gunakan avatar GitHub jika src kosong
+    if (avatarImg && (!avatarImg.getAttribute('src') || avatarImg.getAttribute('src') === '')) {
+      if (userData.avatar_url) avatarImg.src = userData.avatar_url;
+    }
 
     if (statusBadge && statusText) {
       statusBadge.className = 'api-status-badge badge-success';
