@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initMobileNavigation();
   initScrollEffects();
   initIntersectionAnimations();
+  initBackToTop();
 });
 
 /**
@@ -91,6 +92,21 @@ function initMobileNavigation() {
   navLinks.forEach(link => {
     link.addEventListener('click', () => {
       closeMenu();
+    });
+  });
+
+  // Khusus link Beranda (#hero) dan logo: scroll langsung ke paling atas mentok (top: 0)
+  const heroLinks = document.querySelectorAll('a[href="#hero"]');
+  heroLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+      if (window.history.pushState) {
+        window.history.pushState(null, '', '#hero');
+      }
     });
   });
 
@@ -182,3 +198,23 @@ function initIntersectionAnimations() {
 
   animatedElements.forEach(el => observer.observe(el));
 }
+
+/**
+ * ----------------------------------------------------------------------------
+ * 5. Back to Top Button
+ * Menggulirkan halaman kembali ke bagian paling atas secara mulus (smooth scroll)
+ * ----------------------------------------------------------------------------
+ */
+function initBackToTop() {
+  const backToTopBtn = document.getElementById('back-to-top');
+  if (backToTopBtn) {
+    backToTopBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  }
+}
+

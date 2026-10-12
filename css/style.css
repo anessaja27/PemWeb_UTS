@@ -371,8 +371,9 @@ button, input, textarea {
    6. Hero Section
    -------------------------------------------------------------------------- */
 .hero-section {
-  padding-top: 4.5rem;
+  padding-top: 1rem;
   padding-bottom: 4.5rem;
+  scroll-padding-top: var(--header-height);
 }
 
 .hero-container {
@@ -415,6 +416,7 @@ button, input, textarea {
 .highlight-text {
   background: var(--gradient-accent);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -702,14 +704,14 @@ button, input, textarea {
   gap: 1rem;
 }
 
-.academic-list li {
+.academic-list > li {
   display: flex;
   flex-direction: column;
   border-bottom: 1px dashed var(--glass-border);
   padding-bottom: 0.75rem;
 }
 
-.academic-list li:last-child {
+.academic-list > li:last-child {
   border-bottom: none;
   padding-bottom: 0;
 }
@@ -727,6 +729,36 @@ button, input, textarea {
   font-weight: 600;
   color: var(--text-main);
   margin-top: 0.15rem;
+}
+
+.academic-sublist {
+  margin: 0.35rem 0 0 1.25rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+ol.academic-sublist {
+  list-style-type: decimal;
+}
+
+ul.academic-sublist {
+  list-style-type: disc;
+}
+
+.academic-sublist li {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main);
+  border: none;
+  padding: 0;
+  display: list-item;
+}
+
+.academic-sublist li::marker {
+  color: var(--primary);
+  font-weight: 700;
 }
 
 /* --------------------------------------------------------------------------
@@ -1121,6 +1153,7 @@ button, input, textarea {
   line-height: 1.6;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -1472,6 +1505,24 @@ button, input, textarea {
   color: var(--text-dim);
 }
 
+.footer-academic .footer-sublist {
+  margin: 0.25rem 0 0.5rem 1.25rem;
+  padding: 0;
+  list-style-type: decimal;
+}
+
+.footer-academic .footer-sublist li {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-bottom: 0.25rem;
+  display: list-item;
+}
+
+.footer-academic .footer-sublist li::marker {
+  color: var(--primary);
+  font-weight: 600;
+}
+
 .footer-bottom {
   border-top: 1px solid var(--glass-border);
   padding-top: 1.75rem;
@@ -1500,10 +1551,13 @@ button, input, textarea {
   gap: 0.35rem;
   color: var(--text-muted);
   font-weight: 600;
+  cursor: pointer;
+  transition: color var(--transition-fast), transform var(--transition-fast);
 }
 
 .back-to-top:hover {
   color: var(--primary);
+  transform: translateY(-2px);
 }
 
 /* --------------------------------------------------------------------------
